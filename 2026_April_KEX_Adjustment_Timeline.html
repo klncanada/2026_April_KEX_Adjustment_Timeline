@@ -28,7 +28,10 @@
             const containerRef = useRef(null);
             const [arrowCoords, setArrowCoords] = useState(null);
 
-            // Project Phase Definitions (Shifted down by 1 week)
+            // Mocking "Today" as March 9, 2026 based on current context
+            const todayStr = '2026-03-09';
+
+            // Project Phase Definitions (Week 1 starts Mar 09)
             const projectPhases = [
                 {
                     week: 'Week 1',
@@ -152,10 +155,10 @@
                         {/* Header Section */}
                         <div className="bg-slate-900 p-8 text-white relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
-                            <div className="relative z-10">
+                            <div className="relative z-10 text-white">
                                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                                     <div className="flex items-center space-x-3">
-                                        <div className="bg-indigo-500 p-2 rounded-xl text-white">
+                                        <div className="bg-indigo-500 p-2 rounded-xl">
                                             <i data-lucide="calendar" className="w-6 h-6"></i>
                                         </div>
                                         <h1 className="text-2xl font-bold tracking-tight">2026 Salary Adjustment Schedule</h1>
@@ -170,11 +173,11 @@
                                     {projectPhases.map((p, idx) => (
                                         <div key={idx} className="bg-white/5 border border-white/10 p-3 rounded-2xl flex items-center space-x-3">
                                             <div className={`w-8 h-8 rounded-lg ${p.color} flex items-center justify-center text-white`}>
-                                                <i data-lucide={p.icon} className="w-4 h-4"></i>
+                                                <i data-lucide={p.icon} className="w-4 h-4 text-white"></i>
                                             </div>
                                             <div>
                                                 <p className="text-[10px] text-slate-400 font-bold uppercase">{p.week}</p>
-                                                <p className="text-xs font-semibold truncate">{p.title}</p>
+                                                <p className="text-xs font-semibold truncate text-white">{p.title}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -196,7 +199,11 @@
                                 <div className="w-3 h-3 rounded-sm bg-violet-500"></div>
                                 <span>Critical Milestone</span>
                             </div>
-                            <div className="flex items-center gap-2 text-violet-600 uppercase">
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-sm ring-2 ring-red-500 ring-offset-1 bg-white"></div>
+                                <span className="text-red-600">Today</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-violet-600 uppercase font-black">
                                 <div className="w-6 h-0.5 border-t-2 border-dashed border-violet-400"></div>
                                 <span>Retroactive path</span>
                             </div>
@@ -213,50 +220,65 @@
                             </div>
 
                             <div className="grid grid-cols-7 gap-2 md:gap-3">
-                                {days.map((item, idx) => (
-                                    <div 
-                                        key={idx}
-                                        id={`date-${item.fullDate}`}
-                                        onClick={() => setSelectedDate(item.fullDate)}
-                                        className={`
-                                            relative h-24 md:h-32 p-3 rounded-2xl transition-all duration-300 cursor-pointer group border flex flex-col justify-between
-                                            ${item.isWeekend ? 'bg-indigo-50/30 border-slate-50 opacity-60' : 'bg-white border-slate-100 hover:border-indigo-400 hover:shadow-xl'}
-                                            ${item.milestone ? 'ring-2 ring-violet-500 ring-offset-2 z-10 shadow-lg' : ''}
-                                            ${selectedDate === item.fullDate ? 'ring-2 ring-slate-900 bg-white scale-105 z-30' : ''}
-                                        `}
-                                    >
-                                        {item.phase && <div className={`absolute top-0 left-3 right-3 h-1 rounded-b-full ${item.phase.color}`}></div>}
+                                {days.map((item, idx) => {
+                                    const isToday = item.fullDate === todayStr;
+                                    return (
+                                        <div 
+                                            key={idx}
+                                            id={`date-${item.fullDate}`}
+                                            onClick={() => setSelectedDate(item.fullDate)}
+                                            className={`
+                                                relative h-24 md:h-32 p-3 rounded-2xl transition-all duration-300 cursor-pointer group border flex flex-col justify-between
+                                                ${item.isWeekend ? 'bg-indigo-50/30 border-slate-50 opacity-60' : 'bg-white border-slate-100 hover:border-indigo-400 hover:shadow-xl'}
+                                                ${item.milestone ? 'ring-2 ring-violet-500 ring-offset-2 z-10 shadow-lg' : ''}
+                                                ${selectedDate === item.fullDate ? 'ring-2 ring-slate-900 bg-white scale-105 z-30' : ''}
+                                                ${isToday ? 'ring-2 ring-red-500 ring-offset-2 z-20' : ''}
+                                            `}
+                                        >
+                                            {item.phase && <div className={`absolute top-0 left-3 right-3 h-1 rounded-b-full ${item.phase.color}`}></div>}
+                                            
+                                            {/* Today Indicator Dot */}
+                                            {isToday && <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-sm z-40"></div>}
 
-                                        <div className="flex justify-between items-start">
-                                            <span className={`text-xl font-black ${item.isWeekend ? 'text-slate-200' : 'text-slate-800'}`}>{item.day}</span>
-                                            {item.milestone && (
-                                                <div className="bg-violet-600 p-1 rounded-lg shadow-lg">
-                                                    <i data-lucide={item.milestone.type === 'effective' ? 'check-circle' : 'banknote'} className="w-3 h-3 text-white"></i>
-                                                </div>
-                                            )}
-                                        </div>
+                                            <div className="flex justify-between items-start">
+                                                <span className={`text-xl font-black ${item.isWeekend ? 'text-slate-200' : 'text-slate-800'}`}>{item.day}</span>
+                                                {item.milestone && (
+                                                    <div className="bg-violet-600 p-1 rounded-lg shadow-lg">
+                                                        <i data-lucide={item.milestone.type === 'effective' ? 'check-circle' : 'banknote'} className="w-3 h-3 text-white"></i>
+                                                    </div>
+                                                )}
+                                            </div>
 
-                                        <div className="mt-1">
-                                            {item.milestone ? (
-                                                <div className="flex flex-col">
-                                                    <span className="text-[9px] font-black text-violet-600 uppercase leading-none mb-1">Milestone</span>
-                                                    <p className="text-[10px] font-black text-slate-800 leading-tight">{item.milestone.label}</p>
-                                                </div>
-                                            ) : item.phase ? (
-                                                <div className="flex flex-col gap-1">
-                                                    <span className={`text-[9px] font-bold uppercase ${item.phase.color.replace('bg-', 'text-')}`}>{item.phase.week}</span>
-                                                    <p className="text-[9px] font-bold text-slate-500 truncate">{item.phase.title}</p>
-                                                </div>
-                                            ) : item.day === 1 && (
-                                                <span className="text-[10px] bg-slate-800 text-white px-2 py-0.5 rounded-full font-bold uppercase">{item.month}</span>
+                                            <div className="mt-1">
+                                                {item.milestone ? (
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[9px] font-black text-violet-600 uppercase leading-none mb-1 text-violet-600">Milestone</span>
+                                                        <p className="text-[10px] font-black text-slate-800 leading-tight">{item.milestone.label}</p>
+                                                    </div>
+                                                ) : item.phase ? (
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className={`text-[9px] font-bold uppercase ${item.phase.color.replace('bg-', 'text-')}`}>{item.phase.week}</span>
+                                                        <p className="text-[9px] font-bold text-slate-500 truncate">{item.phase.title}</p>
+                                                    </div>
+                                                ) : null}
+                                            </div>
+
+                                            {/* Month Badge */}
+                                            {item.day === 1 && (
+                                                <span className="absolute bottom-2 left-2.5 text-[10px] px-2 py-0.5 rounded-md font-black uppercase tracking-widest bg-slate-900 text-white shadow-md z-10">
+                                                    {item.month}
+                                                </span>
                                             )}
+
+                                            <div className="mt-auto opacity-0 group-hover:opacity-100 transition-opacity flex justify-end">
+                                                <span className="text-[8px] font-bold text-slate-300 uppercase">View Details</span>
+                                            </div>
                                         </div>
-                                        <div className="mt-auto opacity-0 group-hover:opacity-100 transition-opacity"><span className="text-[8px] font-bold text-slate-300 uppercase">View</span></div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
-                        <div className="p-4 bg-slate-50 text-center text-slate-400 text-[10px] font-bold uppercase tracking-widest border-t">© 2026 Project Tracker V1.0</div>
+                        <div className="p-4 bg-slate-50 text-center text-slate-400 text-[10px] font-bold uppercase tracking-widest border-t border-slate-100">© 2026 Project Tracker V1.0</div>
                     </div>
 
                     {/* Modal */}
@@ -267,26 +289,28 @@
                                     <div>
                                         <div className="bg-violet-600 p-8 text-white">
                                             <div className="flex justify-between items-start mb-4">
-                                                <div className="bg-white/20 p-3 rounded-2xl"><i data-lucide={selectedDayData.milestone.type === 'effective' ? 'check-circle' : 'banknote'} className="w-8 h-8"></i></div>
+                                                <div className="bg-white/20 p-3 rounded-2xl"><i data-lucide={selectedDayData.milestone.type === 'effective' ? 'check-circle' : 'banknote'} className="w-8 h-8 text-white"></i></div>
                                                 <button onClick={() => setSelectedDate(null)} className="text-white/60 hover:text-white"><i data-lucide="x" className="w-6 h-6"></i></button>
                                             </div>
-                                            <h3 className="text-3xl font-black mb-1 leading-none">{selectedDayData.milestone.label}</h3>
+                                            <h3 className="text-3xl font-black mb-1 leading-none text-white">{selectedDayData.milestone.label}</h3>
                                             <p className="text-white/80 font-bold">{selectedDayData.fullDate}</p>
                                         </div>
                                         <div className="p-8">
-                                            <div className="bg-violet-50 p-6 rounded-3xl border border-violet-100"><p className="font-bold text-sm leading-relaxed text-violet-800">
-                                                {selectedDayData.milestone.type === 'effective' ? "Official trigger for all salary changes. Calculations switch to new rates from this day forward." : "First payment deployment with adjusted rates. Includes retroactive sum for the back-dated period."}
-                                            </p></div>
+                                            <div className="bg-violet-50 p-6 rounded-3xl border border-violet-100">
+                                                <p className="font-bold text-sm leading-relaxed text-violet-800">
+                                                    {selectedDayData.milestone.type === 'effective' ? "Official trigger for all salary changes. Calculations switch to new rates from this day forward." : "First payment deployment with adjusted rates. Includes retroactive sum for the back-dated period."}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 ) : selectedDayData?.phase ? (
                                     <div>
                                         <div className={`${selectedDayData.phase.color} p-8 text-white`}>
                                             <div className="flex justify-between items-start mb-4">
-                                                <h3 className="text-3xl font-black">{selectedDayData.phase.week}</h3>
+                                                <h3 className="text-3xl font-black text-white">{selectedDayData.phase.week}</h3>
                                                 <button onClick={() => setSelectedDate(null)} className="text-white/60 hover:text-white"><i data-lucide="x" className="w-6 h-6"></i></button>
                                             </div>
-                                            <p className="text-white/80 font-bold uppercase tracking-widest text-sm">{selectedDayData.phase.title}</p>
+                                            <p className="text-white/80 font-bold uppercase tracking-widest text-sm text-white">{selectedDayData.phase.title}</p>
                                         </div>
                                         <div className="p-8 space-y-4">
                                             {selectedDayData.phase.points.map((p, i) => (
@@ -298,8 +322,8 @@
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="p-12 text-center">
-                                        <button onClick={() => setSelectedDate(null)} className="absolute top-8 right-8 text-slate-300 hover:text-slate-800"><i data-lucide="x" className="w-8 h-8"></i></button>
+                                    <div className="p-12 text-center text-slate-400">
+                                        <button onClick={() => setSelectedDate(null)} className="absolute top-8 right-8 text-slate-300 hover:text-slate-800"><i data-lucide="x" className="w-8 h-8 text-white"></i></button>
                                         <i data-lucide="coffee" className="w-12 h-12 text-slate-200 mx-auto mb-4"></i>
                                         <h3 className="text-2xl font-black text-slate-800 mb-2">{selectedDate}</h3>
                                         <p className="text-slate-400 font-bold uppercase text-xs tracking-widest">General Operations</p>
