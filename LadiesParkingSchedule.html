@@ -112,7 +112,7 @@
                 return allScheduleData.slice(startIdx, endIdx);
             }, [allScheduleData, currentIndex]);
 
-            // 处理 Excel 上传
+            // 处理 Excel 上传 (逻辑保留)
             const handleFileUpload = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -213,11 +213,10 @@
             // 当列表展开时，自动滚动到当前周
             useEffect(() => {
                 if (showFullSchedule && currentRowRef.current) {
-                    // 使用 setTimeout 确保 DOM 渲染完成后执行滚动
                     setTimeout(() => {
                         currentRowRef.current.scrollIntoView({ 
-                            behavior: 'auto', // 'auto' 瞬间定位，'smooth' 动画平滑
-                            block: 'start'    // 对齐到容器顶部
+                            behavior: 'auto',
+                            block: 'start'
                         });
                     }, 50);
                 }
@@ -235,11 +234,14 @@
                     <div className="max-w-md mx-auto">
                         <div className="flex justify-between items-center mb-6">
                              <div className="flex items-center gap-2">
-                                <label className="cursor-pointer bg-white border border-slate-200 px-3 py-1.5 rounded-xl text-[11px] font-bold text-slate-500 hover:bg-slate-100 transition-all flex items-center gap-2 shadow-sm">
-                                    <IconUpload />
-                                    {t.syncBtn}
-                                    <input type="file" className="hidden" accept=".xlsx, .xls" onChange={handleFileUpload} />
-                                </label>
+                                {/* 导入 Excel 按钮暂时隐藏，但逻辑保留在代码中 */}
+                                {false && (
+                                    <label className="cursor-pointer bg-white border border-slate-200 px-3 py-1.5 rounded-xl text-[11px] font-bold text-slate-500 hover:bg-slate-100 transition-all flex items-center gap-2 shadow-sm">
+                                        <IconUpload />
+                                        {t.syncBtn}
+                                        <input type="file" className="hidden" accept=".xlsx, .xls" onChange={handleFileUpload} />
+                                    </label>
+                                )}
                                 {lastSync && (
                                     <div className="flex items-center gap-1 text-[9px] text-green-600 font-bold bg-green-50 px-2 py-1 rounded-lg">
                                         <IconCheck />
@@ -254,7 +256,7 @@
                                         key={l}
                                         onClick={() => setLang(l)}
                                         className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all ${
-                                            lang === l ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-400'
+                                            lang === l ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-400 hover:bg-slate-50'
                                         }`}
                                     >
                                         {l.toUpperCase()}
