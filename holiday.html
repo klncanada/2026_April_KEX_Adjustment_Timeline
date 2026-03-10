@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026-2027 KLN Calendar</title>
+    <title>2026 KLN Calendar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -254,6 +254,7 @@
             <button onclick="openHolidayModal('BC')" class="region-btn btn-bc">BC</button>
         </div>
 
+        <!-- 首页网格限制为 12 个月，每行 3 个 -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10" id="year-grid"></div>
     </main>
 
@@ -396,17 +397,22 @@
             activePopoverDay = dateKey;
             const cell = e.currentTarget;
             popover.innerText = holidayNames.join(' / ');
+            
             popover.style.visibility = 'hidden';
             popover.style.display = 'block';
+            
             const rect = cell.getBoundingClientRect();
             const popWidth = popover.offsetWidth;
             const popHeight = popover.offsetHeight;
             const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
             let leftPos = rect.left + scrollLeft + rect.width / 2 - popWidth / 2;
             let topPos = rect.top + scrollTop - popHeight - 12;
+
             if (leftPos < 10) leftPos = 10;
             if (leftPos + popWidth > window.innerWidth - 10) leftPos = window.innerWidth - popWidth - 10;
+
             popover.style.left = `${leftPos}px`;
             popover.style.top = `${topPos}px`;
             popover.style.visibility = 'visible';
@@ -419,10 +425,10 @@
             document.getElementById('main-title').innerText = '2026';
             document.getElementById('back-btn').classList.add('invisible');
 
-            for(let index=0; index < 13; index++) {
-                const is2027 = index === 12;
-                const mYear = is2027 ? 2027 : 2026;
-                const mIdx = is2027 ? 0 : index;
+            // 限制首页只显示 12 个月 (2026年)
+            for(let index=0; index < 12; index++) {
+                const mYear = 2026;
+                const mIdx = index;
                 const name = langData.months[index];
 
                 const card = document.createElement('div');
@@ -436,27 +442,34 @@
 
                 const grid = document.createElement('div');
                 grid.className = 'grid grid-cols-7 text-[11px] text-center gap-y-2';
+                
                 langData.daysShort.forEach(d => {
                     const dLabel = document.createElement('div');
                     dLabel.className = 'text-gray-300 font-bold';
                     dLabel.innerText = d;
                     grid.appendChild(dLabel);
                 });
+
                 const firstDay = new Date(mYear, mIdx, 1).getDay();
                 const daysInMonth = new Date(mYear, mIdx + 1, 0).getDate();
+
                 for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+                
                 for (let d = 1; d <= daysInMonth; d++) {
                     const date = new Date(mYear, mIdx, d);
                     const isToday = new Date().toDateString() === date.toDateString();
                     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                    
                     const dayDiv = document.createElement('div');
                     dayDiv.className = "flex items-center justify-center h-5 w-5 mx-auto relative ";
                     if (isToday) dayDiv.className += "bg-red-500 text-white rounded-full font-bold";
                     else if (isWeekend) dayDiv.className += "text-red-500";
                     else dayDiv.className += "text-gray-800";
+                    
                     dayDiv.innerText = d;
                     grid.appendChild(dayDiv);
                 }
+                
                 card.appendChild(grid);
                 yearGrid.appendChild(card);
             }
@@ -471,16 +484,20 @@
             const name = langData.months[index];
             const firstDay = new Date(mYear, mIdx, 1).getDay();
             const daysInMonth = new Date(mYear, mIdx + 1, 0).getDate();
+
             container.innerHTML = '';
             const thumb = document.createElement('div');
             thumb.className = 'bg-white p-4 rounded-2xl border border-gray-100 shadow-lg transform hover:scale-105 transition-transform';
             thumb.onclick = () => showMonth(index);
+
             const title = document.createElement('div');
             title.className = 'text-[11px] font-black text-red-500 mb-3 uppercase tracking-wider text-center';
             title.innerText = name;
             thumb.appendChild(title);
+
             const grid = document.createElement('div');
             grid.className = 'grid grid-cols-7 gap-1 text-[8px] text-center text-gray-400';
+            
             for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
             for (let d = 1; d <= daysInMonth; d++) {
                 const date = new Date(mYear, mIdx, d);
@@ -499,10 +516,12 @@
             const mYear = is2027 ? 2027 : 2026;
             const mIdx = is2027 ? 0 : index;
             const langData = translations[currentLang];
+
             document.getElementById('current-month-name').innerText = langData.months[index];
             document.getElementById('main-title').innerText = langData.months[index];
             document.getElementById('back-text').innerText = is2027 ? '2027' : '2026';
             document.getElementById('back-btn').classList.remove('invisible');
+
             const dayLabels = document.getElementById('day-labels');
             dayLabels.innerHTML = '';
             const blankHeader = document.createElement('div');
@@ -515,8 +534,10 @@
                 label.innerText = d;
                 dayLabels.appendChild(label);
             });
+
             renderThumbnail(index - 1, document.getElementById('prev-thumb'));
             renderThumbnail(index + 1, document.getElementById('next-thumb'));
+
             const detailGrid = document.getElementById('month-detail-grid');
             detailGrid.innerHTML = ''; 
             const daysInMonth = new Date(mYear, mIdx + 1, 0).getDate();
@@ -524,6 +545,7 @@
             const rows = Math.ceil((firstDay + daysInMonth) / 7);
             const monthHolidays = [];
             let dayCounter = 1;
+
             for (let r = 0; r < rows; r++) {
                 const rowStartDate = new Date(mYear, mIdx, dayCounter - (r === 0 ? firstDay : 0));
                 const weekNum = getSequentialWeekNumber(rowStartDate);
@@ -610,7 +632,7 @@
             }, 400);
         }
 
-        // --- Holiday Modal & Export Logic ---
+        // --- Holiday Modal & Export Logic (限制在 2026) ---
 
         function openHolidayModal(region) {
             selectedRegion = region;
@@ -622,7 +644,8 @@
             modalTitle.innerText = region + langData.holidayTitle;
             modalBody.innerHTML = '';
 
-            const filteredHolidays = holidays.filter(h => h.regions.includes(region));
+            // 过滤：强制仅显示 2026 年的日期
+            const filteredHolidays = holidays.filter(h => h.regions.includes(region) && h.date.startsWith('2026'));
             filteredHolidays.sort((a,b) => a.date.localeCompare(b.date)).forEach(h => {
                 const div = document.createElement('div');
                 div.className = 'flex justify-between py-3 border-b border-gray-50 items-center';
@@ -635,7 +658,6 @@
                 `;
                 modalBody.appendChild(div);
             });
-
             modal.style.display = 'flex';
         }
 
@@ -644,7 +666,8 @@
         }
 
         function exportToICS() {
-            const filteredHolidays = holidays.filter(h => h.regions.includes(selectedRegion));
+            // 过滤：强制仅导出 2026 年的假期
+            const filteredHolidays = holidays.filter(h => h.regions.includes(selectedRegion) && h.date.startsWith('2026'));
             let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//KLN Calendar//EN\n";
 
             filteredHolidays.forEach(h => {
