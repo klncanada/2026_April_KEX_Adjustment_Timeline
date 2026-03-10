@@ -28,8 +28,16 @@
             const containerRef = useRef(null);
             const [arrowCoords, setArrowCoords] = useState(null);
 
-            // Mocking "Today" as March 9, 2026 based on current context
-            const todayStr = '2026-03-09';
+            // Dynamically get today's date in YYYY-MM-DD format
+            const getTodayStr = () => {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            const todayStr = getTodayStr();
 
             // Project Phase Definitions (Week 1 starts Mar 09)
             const projectPhases = [
@@ -158,10 +166,10 @@
                             <div className="relative z-10 text-white">
                                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                                     <div className="flex items-center space-x-3">
-                                        <div className="bg-indigo-500 p-2 rounded-xl">
+                                        <div className="bg-indigo-500 p-2 rounded-xl text-white">
                                             <i data-lucide="calendar" className="w-6 h-6"></i>
                                         </div>
-                                        <h1 className="text-2xl font-bold tracking-tight">2026 Salary Adjustment Schedule</h1>
+                                        <h1 className="text-2xl font-bold tracking-tight text-white">2026 Salary Adjustment Schedule</h1>
                                     </div>
                                     <div className="flex items-center space-x-2 bg-white/10 px-4 py-2 rounded-full border border-white/10">
                                         <div className="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></div>
@@ -171,7 +179,7 @@
                                 
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                     {projectPhases.map((p, idx) => (
-                                        <div key={idx} className="bg-white/5 border border-white/10 p-3 rounded-2xl flex items-center space-x-3">
+                                        <div key={idx} className="bg-white/5 border border-white/10 p-3 rounded-2xl flex items-center space-x-3 text-white">
                                             <div className={`w-8 h-8 rounded-lg ${p.color} flex items-center justify-center text-white`}>
                                                 <i data-lucide={p.icon} className="w-4 h-4 text-white"></i>
                                             </div>
@@ -196,7 +204,7 @@
                                 <span>Weekend</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-sm bg-violet-500"></div>
+                                <div className="w-3 h-3 rounded-sm bg-violet-500 border border-violet-600"></div>
                                 <span>Critical Milestone</span>
                             </div>
                             <div className="flex items-center gap-2">
@@ -288,16 +296,16 @@
                                 {selectedDayData?.milestone ? (
                                     <div>
                                         <div className="bg-violet-600 p-8 text-white">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div className="bg-white/20 p-3 rounded-2xl"><i data-lucide={selectedDayData.milestone.type === 'effective' ? 'check-circle' : 'banknote'} className="w-8 h-8 text-white"></i></div>
-                                                <button onClick={() => setSelectedDate(null)} className="text-white/60 hover:text-white"><i data-lucide="x" className="w-6 h-6"></i></button>
+                                            <div className="flex justify-between items-start mb-4 text-white">
+                                                <div className="bg-white/20 p-3 rounded-2xl text-white"><i data-lucide={selectedDayData.milestone.type === 'effective' ? 'check-circle' : 'banknote'} className="w-8 h-8 text-white"></i></div>
+                                                <button onClick={() => setSelectedDate(null)} className="text-white/60 hover:text-white"><i data-lucide="x" className="w-6 h-6 text-white"></i></button>
                                             </div>
                                             <h3 className="text-3xl font-black mb-1 leading-none text-white">{selectedDayData.milestone.label}</h3>
                                             <p className="text-white/80 font-bold">{selectedDayData.fullDate}</p>
                                         </div>
                                         <div className="p-8">
-                                            <div className="bg-violet-50 p-6 rounded-3xl border border-violet-100">
-                                                <p className="font-bold text-sm leading-relaxed text-violet-800">
+                                            <div className="bg-violet-50 p-6 rounded-3xl border border-violet-100 text-violet-800">
+                                                <p className="font-bold text-sm leading-relaxed">
                                                     {selectedDayData.milestone.type === 'effective' ? "Official trigger for all salary changes. Calculations switch to new rates from this day forward." : "First payment deployment with adjusted rates. Includes retroactive sum for the back-dated period."}
                                                 </p>
                                             </div>
@@ -306,17 +314,17 @@
                                 ) : selectedDayData?.phase ? (
                                     <div>
                                         <div className={`${selectedDayData.phase.color} p-8 text-white`}>
-                                            <div className="flex justify-between items-start mb-4">
+                                            <div className="flex justify-between items-start mb-4 text-white">
                                                 <h3 className="text-3xl font-black text-white">{selectedDayData.phase.week}</h3>
-                                                <button onClick={() => setSelectedDate(null)} className="text-white/60 hover:text-white"><i data-lucide="x" className="w-6 h-6"></i></button>
+                                                <button onClick={() => setSelectedDate(null)} className="text-white/60 hover:text-white text-white"><i data-lucide="x" className="w-6 h-6 text-white"></i></button>
                                             </div>
                                             <p className="text-white/80 font-bold uppercase tracking-widest text-sm text-white">{selectedDayData.phase.title}</p>
                                         </div>
-                                        <div className="p-8 space-y-4">
+                                        <div className="p-8 space-y-4 text-slate-700">
                                             {selectedDayData.phase.points.map((p, i) => (
                                                 <div key={i} className="flex items-start gap-4">
                                                     <div className={`mt-1 w-5 h-5 rounded-full flex items-center justify-center ${selectedDayData.phase.color} bg-opacity-20`}><i data-lucide="check" className={`w-3 h-3 ${selectedDayData.phase.color.replace('bg-', 'text-')}`}></i></div>
-                                                    <p className="text-slate-700 font-semibold">{p}</p>
+                                                    <p className="font-semibold">{p}</p>
                                                 </div>
                                             ))}
                                         </div>
@@ -324,9 +332,9 @@
                                 ) : (
                                     <div className="p-12 text-center text-slate-400">
                                         <button onClick={() => setSelectedDate(null)} className="absolute top-8 right-8 text-slate-300 hover:text-slate-800"><i data-lucide="x" className="w-8 h-8 text-white"></i></button>
-                                        <i data-lucide="coffee" className="w-12 h-12 text-slate-200 mx-auto mb-4"></i>
+                                        <i data-lucide="coffee" className="w-12 h-12 text-slate-200 mx-auto mb-4 text-slate-200"></i>
                                         <h3 className="text-2xl font-black text-slate-800 mb-2">{selectedDate}</h3>
-                                        <p className="text-slate-400 font-bold uppercase text-xs tracking-widest">General Operations</p>
+                                        <p className="text-slate-400 font-bold uppercase text-xs tracking-widest text-slate-400">General Operations</p>
                                     </div>
                                 )}
                             </div>
